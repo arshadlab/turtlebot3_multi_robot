@@ -157,7 +157,7 @@ def generate_launch_description():
             package='gazebo_ros',
             executable='spawn_entity.py',
             arguments=[
-                '-file', os.path.join(turtlebot3_multi_robot,'models', 'multi_turtlebot3_' + TURTLEBOT3_MODEL, 'model.sdf'),
+                '-file', os.path.join(turtlebot3_multi_robot,'models', 'turtlebot3_' + TURTLEBOT3_MODEL, 'model.sdf'),
                 '-entity', robot['name'],
                 '-robot_namespace', namespace,
                 '-x', robot['x_pose'], '-y', robot['y_pose'],
@@ -220,7 +220,7 @@ def generate_launch_description():
             ', z: 0.1}, orientation: {x: 0.0, y: 0.0, z: 0.0, w: 1.0000000}}, }}'
 
         initial_pose_cmd = ExecuteProcess(
-            cmd=['ros2', 'topic', 'pub', '-t', '3', '--qos-reliability', 'reliable', namespace + ['/initialpose'],
+            cmd=['ros2', 'topic', 'pub', '-1', '--qos-reliability', 'reliable', namespace + ['/initialpose'],
                 'geometry_msgs/PoseWithCovarianceStamped', message],
             output='screen'
         )
