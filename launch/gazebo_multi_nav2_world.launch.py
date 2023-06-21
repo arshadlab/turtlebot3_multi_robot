@@ -42,7 +42,7 @@ def generate_launch_description():
 
     TURTLEBOT3_MODEL = 'waffle'
 
-    use_sim_time = LaunchConfiguration('use_sim_time', default='false')
+    use_sim_time = LaunchConfiguration('use_sim_time', default='true')
     declare_use_sim_time = DeclareLaunchArgument(
         name='use_sim_time', default_value=use_sim_time, description='Use simulator time'
     )
