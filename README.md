@@ -1,7 +1,16 @@
 ## Multiple Turtlebot3 robot support in Gazebo
 The ROS2 project  scalable solution for launching multiple TurtleBot3 robots with navigation capabilities using the Navigation2 (Nav2) stack. By leveraging namespaces in ROS2, this project enables the seamless deployment of multiple TurtleBot3 robots in a simple and organized manner. Each robot instance can be differentiated by its unique namespace, ensuring independence and preventing naming conflicts.
 
+
+The 'master' branch includes an implementation that functions with the humble framework, while the 'foxy' branch provides support specifically for ROS2 Foxy.
+
+'master' -> ROS2 Humble
+
+'foxy' -> ROS2 Foxy
+
 ## Run without nav2 stack
+
+**Guide**: https://medium.com/@arshad.mehmood/a-guide-to-multi-robot-navigation-utilizing-turtlebot3-and-nav2-cd24f96d19c6
 
 ros2 launch turtlebot3_multi_robot gazebo_multi_world.launch.py enable_drive:=True
 
@@ -11,6 +20,7 @@ ros2 launch turtlebot3_multi_robot gazebo_multi_world.launch.py enable_drive:=Tr
 ![image](https://github.com/arshadlab/turtlebot3_multi_robot/assets/85929438/c955b964-27fe-46d4-8696-d3c0d106dbe0)
 
 ## Run with nav2 stack
+**Guide**: https://medium.com/@arshad.mehmood/efficient-deployment-and-operation-of-multiple-turtlebot3-robots-in-gazebos-f72f6a364620
 
 ros2 launch turtlebot3_multi_robot gazebo_multi_nav2_world.launch.py enable_drive:=True  use_sim_time:=True
 
