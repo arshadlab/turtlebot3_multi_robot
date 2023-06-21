@@ -8,7 +8,7 @@ The 'master' branch includes an implementation that functions with the humble fr
 
 'foxy' -> ROS2 Foxy
 
-The code in the "foxy" branch is compatible with the "humble" branch as well. In the "humble" branch, there is an updated launch file for bringing up nav2 with composite nodes. However, the creation of composite nodes is currently disabled due to a issue in the ROS2 humble implementation. This issue pertains to the propagation of namespace mapping to nodes (in composite container) with sub-namespaces, such as "/global_costmap/global_costmap".
+The code in the "foxy" branch is compatible with ROS2 humble. In the master branch, there is an updated launch file for bringing up nav2 with composite nodes. However, the creation of composite nodes is currently disabled due to an issue in the ROS2 humble implementation. This issue pertains to the propagation of namespace mapping to nodes (in composite container) with sub-namespaces, such as "/global_costmap/global_costmap".
 
 ## Run without nav2 stack
 **Guide**: https://medium.com/@arshad.mehmood/efficient-deployment-and-operation-of-multiple-turtlebot3-robots-in-gazebos-f72f6a364620
@@ -16,6 +16,7 @@ The code in the "foxy" branch is compatible with the "humble" branch as well. In
 ros2 launch turtlebot3_multi_robot gazebo_multi_world.launch.py enable_drive:=True
 ```
 # turtlebot3_multi_robot
+
 ![image](https://github.com/arshadlab/turtlebot3_multi_robot/assets/85929438/fc958709-018d-48d2-b5b6-6674b53913c8)
 
 ![image](https://github.com/arshadlab/turtlebot3_multi_robot/assets/85929438/c955b964-27fe-46d4-8696-d3c0d106dbe0)
