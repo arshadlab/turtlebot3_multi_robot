@@ -15,6 +15,7 @@
   <depend>rclcpp</depend>
   <depend>sensor_msgs</depend>
   <depend>tf2</depend>
+  <depend>turtlebot3_navigation2</depend>
   <build_depend>nav2_common</build_depend>
   <build_depend>navigation2</build_depend>
   <build_depend>launch_ros</build_depend>
