@@ -17,7 +17,9 @@ class ZPositionMonitor(Node):
         self.monitor.declare_var("is_correct", "int")
         self.monitor.set_var_io_type("is_correct", "output")
         self.monitor.spec = "z >= 0 and z <= 10"  # Ensure z is within [0, 10]
+        print(f"Monitor: {self.monitor.spec}")
         self.monitor.parse()
+        self.monitor.update(('z',[(0.0, 0.0)]))  # Initialize monitor
 
         # Subscribe to ROS2 odometry topic
         self.subscription = self.create_subscription(
@@ -42,17 +44,18 @@ class ZPositionMonitor(Node):
 
             # Evaluate STL specification using RTAMT dense-time online monitor
             robustness = self.monitor.update(('z', dataset))
-            self.get_logger().info(f"Z type: {type(z_position)}")
-            self.get_logger().info(f"Robustnes type: {robustness}")
-            is_satisfied = robustness > 0
+            
+            is_satisfied = True
+            if len(robustness) > 0:
+                is_satisfied = robustness[0][1] > 0.0
 
             if not is_satisfied:
                 self.all_satisfied = False  # If there's a single failure, it stays false
 
             # Log results
-            # self.get_logger().info(
-            #     f"Time: {timestamp:.3f}, Z-Position: {z_position:.3f}, Robustness: {robustness:.3f}, Always Satisfied So Far: {self.all_satisfied}"
-            # )
+            self.get_logger().info(
+                f"Time: {timestamp}, Z-Position: {z_position:.3f}, Robustness: {robustness[0][1]:.3f}, Always Satisfied So Far: {self.all_satisfied}"
+            )
             # self.get_logger().info(
             #     f"Time: {timestamp:.3f}, X-Position:{x_position:.3f}, Y-Position:{y_position:.3f}, Z-Position: {z_position:.3f}"
             # )
