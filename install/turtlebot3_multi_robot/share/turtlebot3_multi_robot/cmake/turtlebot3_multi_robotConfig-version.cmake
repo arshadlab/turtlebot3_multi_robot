@@ -1,0 +1,1 @@
+/home/xurxo/github/robot_ws/build/turtlebot3_multi_robot/ament_cmake_core/turtlebot3_multi_robotConfig-version.cmake

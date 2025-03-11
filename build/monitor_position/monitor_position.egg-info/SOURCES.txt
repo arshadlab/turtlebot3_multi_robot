@@ -1,0 +1,14 @@
+package.xml
+setup.cfg
+setup.py
+launch/monitor_position_launch.py
+monitor_position/__init__.py
+monitor_position/monitor_position.py
+monitor_position.egg-info/PKG-INFO
+monitor_position.egg-info/SOURCES.txt
+monitor_position.egg-info/dependency_links.txt
+monitor_position.egg-info/entry_points.txt
+monitor_position.egg-info/requires.txt
+monitor_position.egg-info/top_level.txt
+monitor_position.egg-info/zip-safe
+resource/monitor_position
