@@ -20,3 +20,5 @@ __pycache__
 /install
 /log
 /.vscode
+/.venv
+/.pytest_cache
