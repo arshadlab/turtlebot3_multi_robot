@@ -1,3 +1,0 @@
-[console_scripts]
-monitor_position = monitor_position.monitor_position:main
-

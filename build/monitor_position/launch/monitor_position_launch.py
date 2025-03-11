@@ -1,1 +1,0 @@
-/home/xurxo/github/robot_ws/src/monitor_position/launch/monitor_position_launch.py
