@@ -44,7 +44,7 @@ if ! command -v colcon &> /dev/null; then
 fi
 
 # Build the workspace
-colcon build --symlink-install
+colcon build --packages-select turtlebot3_multi_robot monitor_position
 
 # Source the workspace setup again to ensure the environment is updated
 source ./install/setup.bash
