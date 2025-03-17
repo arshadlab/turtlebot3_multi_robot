@@ -33,9 +33,7 @@ def generate_launch_description():
     # Names and poses of the robots
     robots = [
         {'name': 'tb1', 'x_pose': '-1.5', 'y_pose': '-0.5', 'z_pose': 0.01},
-        {'name': 'tb2', 'x_pose': '-1.5', 'y_pose': '0.5', 'z_pose': 0.01},
-        {'name': 'tb3', 'x_pose': '1.5', 'y_pose': '-0.5', 'z_pose': 0.01},
-        {'name': 'tb4', 'x_pose': '1.5', 'y_pose': '0.5', 'z_pose': 0.01},
+        {'name': 'tb2', 'x_pose': '1.5', 'y_pose': '0.5', 'z_pose': 0.01},
         # ...
         # ...
         ]
@@ -153,7 +151,7 @@ def generate_launch_description():
         )
 
         # Create spawn call
-        spawn_turtlebot3_burger = Node(
+        spawn_turtlebot3_waffle = Node(
             package='gazebo_ros',
             executable='spawn_entity.py',
             arguments=[
@@ -187,7 +185,7 @@ def generate_launch_description():
         if last_action is None:
             # Call add_action directly for the first robot to facilitate chain instantiation via RegisterEventHandler
             ld.add_action(turtlebot_state_publisher)
-            ld.add_action(spawn_turtlebot3_burger)
+            ld.add_action(spawn_turtlebot3_waffle)
             ld.add_action(bringup_cmd)
 
         else:
@@ -196,7 +194,7 @@ def generate_launch_description():
             spawn_turtlebot3_event = RegisterEventHandler(
                 event_handler=OnProcessExit(
                     target_action=last_action,
-                    on_exit=[spawn_turtlebot3_burger,
+                    on_exit=[spawn_turtlebot3_waffle,
                             turtlebot_state_publisher,
                             bringup_cmd],
                 )
@@ -205,7 +203,7 @@ def generate_launch_description():
             ld.add_action(spawn_turtlebot3_event)
 
         # Save last instance for next RegisterEventHandler
-        last_action = spawn_turtlebot3_burger
+        last_action = spawn_turtlebot3_waffle
     ######################
 
     ######################
@@ -235,7 +233,7 @@ def generate_launch_description():
                                    condition=IfCondition(enable_rviz)
                                     )
 
-        drive_turtlebot3_burger = Node(
+        drive_turtlebot3_waffle = Node(
             package='turtlebot3_gazebo', executable='turtlebot3_drive',
             namespace=namespace, output='screen',
             condition=IfCondition(enable_drive),
@@ -246,7 +244,7 @@ def generate_launch_description():
         post_spawn_event = RegisterEventHandler(
             event_handler=OnProcessExit(
                 target_action=last_action,
-                on_exit=[initial_pose_cmd, rviz_cmd, drive_turtlebot3_burger],
+                on_exit=[initial_pose_cmd, rviz_cmd, drive_turtlebot3_waffle],
             )
         )
 

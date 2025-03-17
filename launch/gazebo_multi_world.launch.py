@@ -30,7 +30,7 @@ from launch.conditions import IfCondition
 def generate_launch_description():
     ld = LaunchDescription()
 
-    TURTLEBOT3_MODEL = "burger"
+    TURTLEBOT3_MODEL = "waffle"
 
     enable_drive = LaunchConfiguration("enable_drive", default="true")
     declare_enable_drive = DeclareLaunchArgument(
@@ -100,7 +100,7 @@ def generate_launch_description():
             )
 
             # Create spawn call
-            spawn_turtlebot3_burger = Node(
+            spawn_turtlebot3_waffle = Node(
                 package="gazebo_ros",
                 executable="spawn_entity.py",
                 arguments=[
@@ -129,7 +129,7 @@ def generate_launch_description():
             if last_action is None:
                 # Call add_action directly for the first robot to facilitate chain instantiation via RegisterEventHandler
                 ld.add_action(turtlebot_state_publisher)
-                ld.add_action(spawn_turtlebot3_burger)
+                ld.add_action(spawn_turtlebot3_waffle)
                 
             else:
                 # Use RegisterEventHandler to ensure next robot creation happens only after the previous one is completed.
@@ -137,14 +137,14 @@ def generate_launch_description():
                 spawn_turtlebot3_event = RegisterEventHandler(
                     event_handler=OnProcessExit(
                         target_action=last_action,
-                        on_exit=[spawn_turtlebot3_burger,
+                        on_exit=[spawn_turtlebot3_waffle,
                                  turtlebot_state_publisher],
                     )
                 )
                 ld.add_action(spawn_turtlebot3_event)
 
             # Save last instance for next RegisterEventHandler
-            last_action = spawn_turtlebot3_burger
+            last_action = spawn_turtlebot3_waffle
 
         # Advance by 2 meter in y direction for next robot instantiation
         y += 2.0
@@ -154,7 +154,7 @@ def generate_launch_description():
         for j in range(ROWS):
             namespace = "/tb" + str(i) + "_" + str(j)
             # Create spawn call
-            drive_turtlebot3_burger = Node(
+            drive_turtlebot3_waffle = Node(
                 package="turtlebot3_gazebo",
                 executable="turtlebot3_drive",
                 namespace=namespace,
@@ -167,7 +167,7 @@ def generate_launch_description():
             drive_turtlebot3_event = RegisterEventHandler(
                 event_handler=OnProcessExit(
                     target_action=last_action,
-                    on_exit=[drive_turtlebot3_burger],
+                    on_exit=[drive_turtlebot3_waffle],
                 )
             )
             
