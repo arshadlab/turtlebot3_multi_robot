@@ -26,25 +26,25 @@ if [ -f /opt/ros/humble/setup.bash ]; then
   source /opt/ros/humble/setup.bash
 else
   echo "Error: /opt/ros/humble/setup.bash not found."
-  exit 1
+  exit 2
 fi
 
 # Source additional ROS 2 setup
-if [ -f ~/ros2_humble/install/local_setup.bash ]; then
-  source ~/ros2_humble/install/local_setup.bash
+if [ -f /opt/ros/humble/local_setup.bash ]; then
+  source /opt/ros/humble/local_setup.bash
 else
-  echo "Error: ~/ros2_humble/install/local_setup.bash not found."
-  exit 1
+  echo "Error: /opt/ros/humble/local_setup.bash not found."
+  exit 3
 fi
 
 # Check if colcon is available
 if ! command -v colcon &> /dev/null; then
   echo "Error: colcon could not be found."
-  exit 1
+  exit 4
 fi
 
 # Build the workspace
-colcon build --packages-select turtlebot3_multi_robot monitor_position
+colcon build --packages-select turtlebot3_multi_robot monitor_position collision_detector twist_waypoint_follower
 
 # Source the workspace setup again to ensure the environment is updated
 source ./install/setup.bash
@@ -58,7 +58,7 @@ export PYTHONPATH=$PYTHONPATH:$(python -c "import site; print(site.getsitepackag
 # Check if ros2 is available
 if ! command -v ros2 &> /dev/null; then
   echo "Error: ros2 could not be found."
-  exit 1
+  exit 5
 fi
 
 # Launch the combined launch file
