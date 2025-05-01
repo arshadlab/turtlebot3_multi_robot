@@ -56,17 +56,9 @@ class ZPositionMonitor(Node):
             is_satisfied = True
             if len(robustness) > 0:
                 is_satisfied = robustness[0][1] > epsilon  
-            self.get_logger().info(f"Robustness shape: {len(robustness[0])}")
+            
             if not is_satisfied:
                 self.all_satisfied = False  # If there's a single failure, it stays false
-
-            # Log results
-            self.get_logger().info(
-                f"Time: {timestamp}, Z-Position: {z_position:.3f}, Robustness: {robustness[0][1]:.3f}, Always Satisfied So Far: {self.all_satisfied}"
-            )
-            # self.get_logger().info(
-            #     f"Time: {timestamp:.3f}, X-Position:{x_position:.3f}, Y-Position:{y_position:.3f}, Z-Position: {z_position:.3f}"
-            # )
         except KeyError as e:
             self.get_logger().error(f"KeyError encountered: {e}")
         except Exception as e:
