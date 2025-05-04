@@ -12,11 +12,21 @@ class ZPositionMonitor(Node):
         super().__init__('z_position_monitor')
         self.all_satisfied = True
 
+        
+
         # Initialize RTAMT dense-time online monitor
         self.monitor = rtamt.StlDenseTimeOnlineSpecification()
-        self.monitor.name = "Z-Position Monitor"
-        self.monitor.declare_var("z", "float")
-        self.monitor.set_var_io_type("z", "input")
+        self.monitor.name = "CollisionMonitor"
+        self.monitor.declare_var("x_1", "float") # own x position
+        self.monitor.declare_var("y_1", "float") # own y position
+        self.monitor.declare_var("theta", "float") # own orientation
+        self.monitor.declare_var("velocity", "float") # own velocity
+        self.monitor.set_var_io_type("x_1", "input")
+        self.monitor.set_var_io_type("y_1", "input")
+        self.monitor.set_var_io_type("theta", "input")
+        self.monitor.set_var_io_type("velocity", "input")
+
+        # Declare the robustness variable
         self.monitor.declare_var("is_correct", "int")
         self.monitor.set_var_io_type("is_correct", "output")
         self.monitor.spec = "z >= 0 and z <= 10"  # Ensure z is within [0, 10]
