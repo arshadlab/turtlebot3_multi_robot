@@ -7,11 +7,13 @@ from nav_msgs.msg import Odometry
 
 
 
-class ZPositionMonitor(Node):
+class CollisionMonitor(Node):
     def __init__(self):
         super().__init__('z_position_monitor')
         self.all_satisfied = True
-
+        
+        self.future_horizont = 5 # intervals in the future
+        self.collision_threshold = 0.5 # meters
         
 
         # Initialize RTAMT dense-time online monitor
@@ -76,7 +78,7 @@ class ZPositionMonitor(Node):
 
 def main(args=None):
     rclpy.init(args=args)
-    node = ZPositionMonitor()
+    node = CollisionMonitor()
     try:
         while rclpy.ok():
             rclpy.spin_once(node)
