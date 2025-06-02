@@ -15,7 +15,7 @@ def generate_launch_description():
     # Launch configuration variables specific to simulation
     use_sim_time = LaunchConfiguration('use_sim_time', default='true')
     enable_drive = LaunchConfiguration('enable_drive', default='false')
-    enable_rviz = LaunchConfiguration('enable_rviz', default='true')
+    enable_rviz = LaunchConfiguration('enable_rviz', default='false')
 
     # Include the Gazebo simulation launch file
     gazebo_launch = IncludeLaunchDescription(

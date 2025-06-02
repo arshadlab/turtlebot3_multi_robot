@@ -48,8 +48,6 @@ class TwistWaypointFollower(Node):
     def timer_callback_tb1(self):
         if self.current_pose_tb1 is None:
             return
-        self.get_logger().info(f"Current Pose: {self.current_pose_tb1}")
-        self.get_logger().info(f"Current Waypoint: {self.current_waypoint_tb1}")
         target = TB1_WAYPOINTS[self.current_waypoint_tb1]
         x = self.current_pose_tb1.position.x
         y = self.current_pose_tb1.position.y
