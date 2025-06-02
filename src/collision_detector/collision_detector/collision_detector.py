@@ -3,6 +3,7 @@ import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String
 from nav_msgs.msg import Odometry
+from datetime import datetime
 
 MIN_DISTANCE = 0.208 * 2 # Double the radius of the robot
 
@@ -45,9 +46,10 @@ class CollisionDetector(Node):
                         (self.tb1_position.z - self.tb2_position.z) ** 2) ** 0.5
             
             if distance < MIN_DISTANCE:
-                self.get_logger().info("Collision detected!")
+                current_time = self.get_clock().now().to_msg()
+                self.get_logger().info(f"{current_time}| Collision detected between tb1 and tb2{distance:.2f}")
                 msg = String()
-                msg.data = "Collision detected between tb1 and tb2{:.2f}".format(distance)
+                msg.data = f"{current_time}| Collision detected between tb1 and tb2{distance:.2f}"
                 self.publisher.publish(msg)
                 self.collision_count += 1
 

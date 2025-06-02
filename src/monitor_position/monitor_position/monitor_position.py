@@ -8,6 +8,10 @@ import re
 import math
 import traceback
 from time import sleep
+from datetime import datetime
+
+
+epsilon = 1e-5
 
 class CollisionMonitor(Node):
     def __init__(self):
@@ -17,7 +21,7 @@ class CollisionMonitor(Node):
         self.all_satisfied = True
 
         self.future_horizont = 5  # Number of time steps to keep in history (window)
-        self.collision_threshold = 0.8  # meters
+        self.collision_threshold =  0.208 * 2  # meters
         self.delta_t = 0.2  # prediction interval
 
         # Use RTAMT Discrete Time OFFLINE Monitor
@@ -62,7 +66,7 @@ class CollisionMonitor(Node):
             10
         )
         self.timer = self.create_timer(0.1, self.collision_callback)
-        self.publisher = self.create_publisher(String, 'collision_alert', 10)
+        self.publisher = self.create_publisher(String, 'collision_warning', 10)
         self.mutex = Lock()
         self.position1 = {}
         self.position2 = {}
@@ -88,10 +92,8 @@ class CollisionMonitor(Node):
 
     def collision_callback(self):
         with self.mutex:
+            # Wait for the two robots to publish their positions
             if not self.position1 or not self.position2:
-                self.get_logger().info("Waiting for both positions to be available.") 
-                # reduce communication spam
-                sleep(1)
                 return
 
             x1_future = self.position1['x1'] + self.position1['v1'] * self.delta_t * math.cos(self.position1['theta1'])
@@ -128,12 +130,14 @@ class CollisionMonitor(Node):
                 if isinstance(robustness, list) and len(robustness) > 0:
                     satisfied = all(r[1] > 0 for r in robustness)
                 else:
-                    satisfied = robustness > 0
+                    satisfied = robustness > epsilon
                 if not satisfied:
                     dx = self.position1['x1'] - self.position2['x2']
                     dy = self.position1['y1'] - self.position2['y2']
                     distance_now = math.sqrt(dx**2 + dy**2)
-                    self.get_logger().warn("Collision detected or too close! Distance now: {:.2f} m".format(distance_now))
+                    current_time = self.get_clock().now().to_msg()
+                    self.get_logger().warn(f"{current_time}Collision detected or too close! Distance now: {distance_now:.2f} m")
+                    
             except Exception as e:
                 self.get_logger().error(f"STL evaluation failed: {e} (type: {type(e)})")
                 self.get_logger().error("Traceback:\n" + traceback.format_exc())
