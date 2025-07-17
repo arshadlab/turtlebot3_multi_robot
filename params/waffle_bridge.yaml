@@ -1,0 +1,46 @@
+# gz topic published by the simulator core
+  
+- direction: GZ_TO_ROS
+  gz_topic_name: joint_states
+  gz_type_name: gz.msgs.Model
+  ros_topic_name: joint_states
+  ros_type_name: sensor_msgs/msg/JointState
+
+- direction: GZ_TO_ROS
+  gz_topic_name: odom
+  gz_type_name: gz.msgs.Odometry
+  ros_topic_name: odom
+  ros_type_name: nav_msgs/msg/Odometry
+- direction: GZ_TO_ROS
+  gz_topic_name: tf
+  gz_type_name: gz.msgs.Pose_V
+  ros_topic_name: tf
+  ros_type_name: tf2_msgs/msg/TFMessage
+
+# gz topic subscribed to by DiffDrive plugin
+- ros_topic_name: cmd_vel
+  gz_topic_name: cmd_vel
+  ros_type_name: geometry_msgs/msg/TwistStamped
+  gz_type_name: gz.msgs.Twist
+  direction: ROS_TO_GZ
+
+# gz topic published by IMU plugin
+- ros_topic_name: imu
+  gz_topic_name: imu
+  ros_type_name: sensor_msgs/msg/Imu
+  gz_type_name: gz.msgs.IMU
+  direction: GZ_TO_ROS
+
+# gz topic published by Sensors plugin
+- ros_topic_name: scan
+  gz_topic_name: scan
+  ros_type_name: sensor_msgs/msg/LaserScan
+  gz_type_name: gz.msgs.LaserScan
+  direction: GZ_TO_ROS
+
+# gz topic published by Sensors plugin (Camera)
+- ros_topic_name: camera/camera_info
+  gz_topic_name: camera/camera_info
+  ros_type_name: sensor_msgs/msg/CameraInfo
+  gz_type_name: gz.msgs.CameraInfo
+  direction: GZ_TO_ROS
