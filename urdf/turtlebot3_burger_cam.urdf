@@ -1,9 +1,7 @@
 <?xml version="1.0" ?>
-<robot name="turtlebot3_burger"
+<robot name="turtlebot3_burger_cam"
   xmlns:xacro="http://ros.org/wiki/xacro">
-  <!-- <xacro:include filename="$(find turtlebot3_description)/urdf/common_properties.urdf"/> -->
-
-  <!-- Init colour -->
+  
   <material name="black">
       <color rgba="0.0 0.0 0.0 1.0"/>
   </material>
@@ -192,5 +190,34 @@
       <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001" />
     </inertial>
   </link>
+  
+  <joint name="camera_joint" type="fixed">
+    <origin xyz="0.040 -0.000 0.110" rpy="0 0 0"/>
+    <parent link="base_link"/>
+    <child link="camera_link"/>
+  </joint>
+
+  <link name="camera_link">
+    <collision>
+      <origin xyz="0.005 0.000 0.013" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.015 0.030 0.027"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="camera_rgb_joint" type="fixed">
+    <origin xyz="0.003 0.000 0.009" rpy="0 0 0"/>
+    <parent link="camera_link"/>
+    <child link="camera_rgb_frame"/>
+  </joint>
+  <link name="camera_rgb_frame"/>
+
+  <joint name="camera_rgb_optical_joint" type="fixed">
+    <origin xyz="0 0 0" rpy="-1.5707 0 -1.57"/>
+    <parent link="camera_rgb_frame"/>
+    <child link="camera_rgb_optical_frame"/>
+  </joint>
+  <link name="camera_rgb_optical_frame"/>
 
 </robot>

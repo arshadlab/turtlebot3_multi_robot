@@ -1,0 +1,21 @@
+robots:
+  - name: tb1
+    x_pose: "-1.5"
+    y_pose: "-0.5"
+    z_pose: 0.01
+    enabled: true
+  - name: tb2
+    x_pose: "-1.5"
+    y_pose: "0.5"
+    z_pose: 0.01
+    enabled: false
+  - name: tb3
+    x_pose: "1.5"
+    y_pose: "-0.5"
+    z_pose: 0.01
+    enabled: true
+  - name: tb4
+    x_pose: "1.5"
+    y_pose: "0.5"
+    z_pose: 0.01
+    enabled: false
