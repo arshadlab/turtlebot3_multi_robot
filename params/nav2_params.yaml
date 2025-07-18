@@ -40,6 +40,7 @@ amcl:
     scan_topic: scan
     map_topic: /map
 
+
 amcl_map_client:
   ros__parameters:
     use_sim_time: True
