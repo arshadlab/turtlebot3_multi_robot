@@ -4,6 +4,8 @@ from setuptools import setup, find_packages
 
 package_name = 'turtlebot3_multi_robot'
 
+
+
 setup(
     name=package_name,
     version='1.0.0',
@@ -17,8 +19,10 @@ setup(
         (os.path.join('share', package_name, 'params'), glob('params/*.yaml')),
         (os.path.join('share', package_name, 'rviz'), glob('rviz/*.rviz')),
         (os.path.join('share', package_name, 'worlds'), glob('worlds/*.world')),
+        (os.path.join('share', package_name, 'models', 'turtlebot3_burger'), glob('models/turtlebot3_burger/*') ),
     ],
     install_requires=['setuptools'],
+    include_package_data=True,
     zip_safe=True,
     maintainer='Arshad Mehmood',
     maintainer_email='arshadm78@yahoo.com.com',

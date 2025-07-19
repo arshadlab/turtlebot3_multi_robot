@@ -123,7 +123,8 @@ def generate_launch_description():
                 output='screen',
                 respawn=use_respawn,
                 respawn_delay=2.0,
-                parameters=[configured_params],
+                parameters=[configured_params,
+                            {'use_sim_time': use_sim_time}],
                 arguments=['--ros-args', '--log-level', log_level],
                 remappings=remappings),
             Node(
@@ -133,7 +134,8 @@ def generate_launch_description():
                 output='screen',
                 respawn=use_respawn,
                 respawn_delay=2.0,
-                parameters=[configured_params],
+                parameters=[configured_params,
+                            {'use_sim_time': use_sim_time}],
                 arguments=['--ros-args', '--log-level', log_level],
                 remappings=remappings),
             Node(
@@ -167,13 +169,15 @@ def generate_launch_description():
                 package='nav2_map_server',
                 plugin='nav2_map_server::MapServer',
                 name='map_server',
-                parameters=[configured_params],
+                parameters=[configured_params,
+                            {'use_sim_time': use_sim_time}],
                 remappings=remappings),
             ComposableNode(
                 package='nav2_amcl',
                 plugin='nav2_amcl::AmclNode',
                 name='amcl',
-                parameters=[configured_params],
+                parameters=[configured_params,
+                            {'use_sim_time': use_sim_time}],
                 remappings=remappings),
             ComposableNode(
                 package='nav2_lifecycle_manager',

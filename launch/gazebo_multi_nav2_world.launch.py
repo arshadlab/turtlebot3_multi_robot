@@ -4,6 +4,13 @@
 # It demonstrates how to spawn multiple TurtleBot3 robots (e.g Burger model) in Ignition Gazebo (Harmonic)
 # using ROS 2 Jazzy. The robots are each given their own namespace and have individual bridges and state publishers.
 
+
+#if using cyclone dds
+#export CYCLONEDDS_URI=${CYCLONEDDS_URI:-"<CycloneDDS><Discovery><ParticipantIndex>auto</ParticipantIndex><MaxAutoParticipantIndex>100</MaxAutoParticipantIndex></Discovery></CycloneDDS>"}
+
+
+#export GZ_FUEL_CACHE_ONLY=1
+
 import os
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
@@ -27,7 +34,7 @@ def launch_setup(context, *args, **kwargs):
     
      # Names and poses of the robots
     robots = [
-        {'name': 'tb11', 'x_pose': '-1.5', 'y_pose': '-0.5', 'z_pose': 0.01},
+        {'name': 'tb1', 'x_pose': '-1.5', 'y_pose': '-0.5', 'z_pose': 0.01},
         #{'name': 'tb2', 'x_pose': '-1.5', 'y_pose': '0.5', 'z_pose': 0.01},
         #{'name': 'tb3', 'x_pose': '1.5', 'y_pose': '-0.5', 'z_pose': 0.01},
         #{'name': 'tb4', 'x_pose': '1.5', 'y_pose': '0.5', 'z_pose': 0.01},
@@ -81,7 +88,7 @@ def launch_setup(context, *args, **kwargs):
     world_path = os.path.join(
         get_package_share_directory('turtlebot3_multi_robot'),
         'worlds', 'multi_robot_world.world')
-    model_path = os.path.join(turtlebot3_gazebo_dir, 'models', model_folder, 'model.sdf')
+    model_path = os.path.join(turtlebot3_multi_robot, 'models', model_folder, 'model.sdf')
 
    
     # Add TurtleBot3 model path to Gazebo resource path
@@ -148,9 +155,9 @@ def launch_setup(context, *args, **kwargs):
     
     last_action = None
  
-     # Spawn a grid of robots with namespaces and individual bridges
+    # Spawn a grid of robots with namespaces and individual bridges
     for robot in robots:
-        namespace = f"/tb_{robot['name']}"
+        namespace = f"{robot['name']}"
         # Robot state publisher node
         state_pub = Node(
             package="robot_state_publisher",
@@ -210,7 +217,7 @@ def launch_setup(context, *args, **kwargs):
             parameters=[{'use_sim_time': use_sim_time}],
             output='screen'
         )
-
+        '''
         # Start image bridge node (for camera streaming)
         image_bridge_node = Node(
             package='ros_gz_image',
@@ -220,7 +227,7 @@ def launch_setup(context, *args, **kwargs):
             parameters=[{'use_sim_time': use_sim_time}],
             output='screen'
         )
-
+        '''
         bringup_cmd = IncludeLaunchDescription(
                 PythonLaunchDescriptionSource(
                     os.path.join(nav_launch_dir, 'bringup_launch.py')),
@@ -238,55 +245,98 @@ def launch_setup(context, *args, **kwargs):
                                     'use_sim_time': use_sim_time, 'log_level': 'warn'}.items()
                                     )
         
-        rviz_cmd = IncludeLaunchDescription(
-            PythonLaunchDescriptionSource(
-                os.path.join(nav_launch_dir, 'rviz_launch.py')),
-                launch_arguments={'use_sim_time': use_sim_time, 
-                                  'namespace': namespace,
-                                  'use_namespace': 'True',
-                                  'rviz_config': rviz_config_file, 'log_level': 'warn'}.items(),
-                                   condition=IfCondition(enable_rviz)
-                                    )
-        
         # Ensure robots are spawned sequentially
         if last_action is None:
             ld.add_action(state_pub)
             ld.add_action(spawn_robot)
-            ld.add_action(bridge_node)
-            ld.add_action(image_bridge_node)
-            ld.add_action(rviz_cmd)
-            ld.add_action(bringup_cmd)
+
+            ld.add_action(RegisterEventHandler(
+                OnProcessExit(
+                    target_action=spawn_robot,
+                    on_exit=[bridge_node, bringup_cmd]
+                )
+            ))
+            
         else:
             ld.add_action(RegisterEventHandler(
                 OnProcessExit(
                     target_action=last_action,
-                    on_exit=[state_pub, spawn_robot, bridge_node, image_bridge_node,rviz_cmd, bringup_cmd]
+                    on_exit=[state_pub, spawn_robot]
+                )
+            ))
+            
+            ld.add_action(RegisterEventHandler(
+                OnProcessExit(
+                    target_action=spawn_robot,
+                    on_exit=[bridge_node, bringup_cmd]
                 )
             ))
 
         last_action = spawn_robot
         
+    clock_bridge_node = Node(
+        package='ros_gz_bridge',
+        executable='parameter_bridge',
+        name='clock_bridge',
+        output='screen',
+        arguments=['/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock'],
+        parameters=[{'use_sim_time': use_sim_time}]
+    )
     
-    '''
-    # Launch drive node for each robot after they are all spawned
-    for i in range(cols):
-        for j in range(rows):
-            namespace = f"/tb{i}_{j}"
-            drive_node = Node(
-                package="turtlebot3_gazebo",
-                executable="turtlebot3_drive",
-                namespace=namespace,
-                output="screen",
-                condition=IfCondition(enable_drive),
-            )
-            drive_event = RegisterEventHandler(
+    ld.add_action(RegisterEventHandler(
                 OnProcessExit(
-                    target_action=last_action,
-                    on_exit=[drive_node],
+                    target_action=spawn_robot,
+                    on_exit=[clock_bridge_node]
                 )
+            ))
+    
+    for robot in robots:
+
+        namespace = f"/{robot['name']}"
+
+        # Create a initial pose topic publish call
+        message = '{header: {frame_id: map}, pose: {pose: {position: {x: ' + \
+            robot['x_pose'] + ', y: ' + robot['y_pose'] + \
+            ', z: 0.1}, orientation: {x: 0.0, y: 0.0, z: 0.0, w: 1.0000000}}, }}'
+
+        initial_pose_cmd = ExecuteProcess(
+            cmd=['ros2', 'topic', 'pub', '-t', '3', '--qos-reliability', 'reliable', [namespace] + ['/initialpose'],
+                'geometry_msgs/PoseWithCovarianceStamped', message],
+            output='screen'
+        )
+
+        rviz_cmd = IncludeLaunchDescription(
+            PythonLaunchDescriptionSource(
+                os.path.join(nav_launch_dir, 'rviz_launch.py')),
+                launch_arguments={'use_sim_time': use_sim_time,
+                                  'namespace': namespace,
+                                  'use_namespace': 'True',
+                                  'rviz_config': rviz_config_file, 'log_level': 'warn'}.items(),
+                                   condition=IfCondition(enable_rviz)
+                                    )
+
+        drive_turtlebot3_burger = Node(
+            package='turtlebot3_gazebo', executable='turtlebot3_drive',
+            namespace=namespace, output='screen',
+            condition=IfCondition(enable_drive),
+             parameters=[{'use_sim_time': use_sim_time}],
+        )
+
+        # Use RegisterEventHandler to ensure next robot rviz launch happens
+        # only after all robots are spawned
+        post_spawn_event = RegisterEventHandler(
+            event_handler=OnProcessExit(
+                target_action=last_action,
+                on_exit=[initial_pose_cmd, rviz_cmd],
             )
-            ld.add_action(drive_event)
-    '''
+        )
+
+        # Perform next rviz and other node instantiation after the previous intialpose request done
+        last_action = initial_pose_cmd
+
+        ld.add_action(post_spawn_event)
+        ld.add_action(declare_params_file_cmd)
+    
     return [ld]
 
 def generate_launch_description():
