@@ -109,8 +109,8 @@ def generate_launch_description():
             arguments=['-d', rviz_config],
             parameters=[{'use_sim_time': use_sim_time, 'log_level': 'warn'}],
             remappings=[
-                ('/tf', f'{namespace}/tf'),
-                ('/tf_static', f'{namespace}/tf_static')
+                ('/tf', f'tf'),
+                ('/tf_static', f'tf_static')
             ],
             output='screen'
         )
