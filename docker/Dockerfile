@@ -30,9 +30,9 @@ ENV CYCLONEDDS_URI=file:///etc/cyclonedds.xml
 # Initialize rosdep
 RUN rosdep update
 
-# Create workspace
-WORKDIR /root/ros2_ws
-RUN mkdir -p src
+# Create non-root accessible workspace
+WORKDIR /opt/ros2_ws
+RUN mkdir -p src && chmod -R a+rwx /opt/ros2_ws
 
 # Clone your repository into src
 RUN git clone https://github.com/arshadlab/tb3_multi_robot.git src/tb3_multi_robot -b jazzy
@@ -43,12 +43,12 @@ RUN rosdep install --from-paths src --ignore-src -r -y
 # Source ROS environment before build
 RUN /bin/bash -c "source /opt/ros/${ROS_DISTRO}/setup.bash && colcon build --symlink-install"
 
+# Make sure workspace is readable/executable by all users
+RUN chmod -R a+rX /opt/ros2_ws
+
 # Default shell setup when container starts
 RUN echo "source /opt/ros/${ROS_DISTRO}/setup.bash" >> ~/.bashrc
-RUN echo "source /root/ros2_ws/install/setup.bash" >> ~/.bashrc
-
-# Set working directory
-WORKDIR /root/ros2_ws
+RUN echo "source /opt/ros2_ws/install/setup.bash" >> ~/.bashrc
 
 # Copy entrypoint script and make it executable
 COPY entrypoint.sh /entrypoint.sh
@@ -56,4 +56,7 @@ RUN chmod +x /entrypoint.sh
 
 # Use it as entrypoint
 ENTRYPOINT ["/entrypoint.sh"]
+
+# Default workdir inside container
+WORKDIR /opt/ros2_ws
 

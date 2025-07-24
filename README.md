@@ -259,25 +259,68 @@ $ cd docker
 $ docker build -t tb3_multi_robot:jazzy .
 ```
 
+This will build container and also clone and build the repo in /opt/ros2_ws.
+
 ### 🚀 Launch robots in Gazebo
 
 Run the container and launch the Gazebo simulation:
 
 ```
-$ docker run -it --rm  --name tb3sim   --env="DISPLAY=$DISPLAY"     --env="QT_X11_NO_MITSHM=1"   --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw"   --volume="/dev/dri:/dev/dri"   tb3_multi_robot:jazzy ros2 launch tb3_multi_robot tb3_world.launch.py
+$ docker run -it --rm \
+  --user $(id -u):$(id -g) \
+  --name tb3sim \
+  --env="DISPLAY=$DISPLAY" \
+  --env="QT_X11_NO_MITSHM=1" \
+  --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" \
+  --volume="/dev/dri:/dev/dri" \
+  tb3_multi_robot:jazzy \
+  ros2 launch tb3_multi_robot tb3_world.launch.py
 ```
 
 Ensure the command `xhost +local:docker` is executed on the host system to permit GUI display access for Docker containers.
+
 
 ### Launch Nav2 nodes in already running container
 
 After the robots are active, open a new terminal and run:
 
 ```
-$ docker exec -it tb3sim bash -c "source /root/ros2_ws/install/setup.bash && ros2 launch tb3_multi_robot tb3_nav2.launch.py"
+$ docker exec -it tb3sim bash -c "
+  source /opt/ros2_ws/install/setup.bash && \
+  ros2 launch tb3_multi_robot tb3_nav2.launch.py
+"
 ```
 
 This launches the Nav2 stack inside the already running container.
+
+## Accessing host project folder via Docker.
+
+To build and run the multi-robot demo using a local (host-cloned) repository inside the Docker environment, mount the host directory into the container. Note that the default /opt/ros2_ws workspace inside the container will not be used in this case.
+
+```
+$ docker run -it --rm \
+  --user $(id -u):$(id -g) \
+  --name tb3sim \
+  --env="DISPLAY=$DISPLAY" \
+  --env="QT_X11_NO_MITSHM=1" \
+  --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" \
+  --volume="/dev/dri:/dev/dri" \
+  --volume="<absolute path of local project/workspace>:/robot_ws" \
+  tb3_multi_robot:jazzy \
+  bash
+```
+Note: Replace < absolute path to local project/workspace > with the full path to the cloned tb3_multi_robot directory on the host system.
+
+This will open an interactive shell. Navigate to /robot_ws inside the container and build the workspace using colcon. All changes will reflect directly in the host directory.
+
+To access the running container from another terminal, use:
+
+```
+$ docker exec -it tb3sim bash
+```
+
+Note: By default, this will place the shell in /opt/ros2_ws. Change directory to /robot_ws manually and source ./install/setup.bash from there.
+When building both inside and outside the container, avoid using --symlink-install to prevent conflicts.
 
 ## Robot Configuration
 
@@ -332,6 +375,23 @@ Reduce the update frequency in the Gazebo .world file to ease the physics comput
 ### 3. Reduce Topic Frequency
 Consider modifying the robot model or relevant plugins to reduce the frequency of published topics (e.g., /odom, /tf, /scan) if they are not critical at high rates.
 
-## 📎 Note on Included Files
+# FAQ
+**Why are /tf and /tf_static explicitly remapped in RViz and other nodes, even when a namespace is applied?**
+
+Although nodes like rviz2 can be launched with a specific namespace, the TransformListener in tf2_ros subscribes to the global topics /tf and /tf_static by default. This behavior stems from how the listener is implemented internally — the topic names are hardcoded with a leading slash, making them absolute paths (refer to /opt/ros/jazzy/include/tf2_ros/transform_listener.h for reference).
+
+This can be quickly verified using the following command:
+
+```
+rviz2 --ros-args -r __ns:=/tb1
+```
+
+Despite the namespace, the resulting RViz instance still subscribes to /tf and /tf_static globally.
+
+In a multi-robot configuration, where each robot is designed to operate with an isolated TF tree, remapping /tf to tf (a relative topic) ensures proper namespacing. This approach prevents conflicts and guarantees that TF messages remain within the intended robot scope.
+
+Such remapping is also necessary in other components (e.g., Nav2) that instantiate their own transform listeners. Applying consistent remapping avoids unintended cross-robot data mixing and supports clean separation of transform data across all robot instances.
+
+# 📎 Note on Included Files
 
 Some of configuration and model files (e.g., from turtlebot3 and nav2) have been directly copied into this repository. These were modified to better suit the multi-robot simulation and to ensure long-term consistency and reproducibility—even if the original upstream repositories evolve or change in the future. All original credit for these files remains with their respective authors and maintainers.
