@@ -6,7 +6,7 @@ amcl:
     alpha3: 0.2
     alpha4: 0.2
     alpha5: 0.2
-    base_frame_id: "base_footprint"
+    base_frame_id: "tb2/base_footprint"
     beam_skip_distance: 0.5
     beam_skip_error_threshold: 0.9
     beam_skip_threshold: 0.3
@@ -20,7 +20,7 @@ amcl:
     max_beams: 60
     max_particles: 2000
     min_particles: 500
-    odom_frame_id: "odom"
+    odom_frame_id: "tb2/odom"
     pf_err: 0.05
     pf_z: 0.99
     recovery_alpha_fast: 0.0
@@ -52,8 +52,8 @@ bt_navigator:
   ros__parameters:
     use_sim_time: True
     global_frame: map
-    robot_base_frame: base_link
-    odom_topic: /odom
+    robot_base_frame: tb2/base_link
+    odom_topic: /tb2/odom
     enable_groot_monitoring: False
     groot_zmq_publisher_port: 1666
     groot_zmq_server_port: 1667
@@ -181,8 +181,8 @@ local_costmap:
     ros__parameters:
       update_frequency: 5.0
       publish_frequency: 2.0
-      global_frame: odom
-      robot_base_frame: base_link
+      global_frame: tb2/odom
+      robot_base_frame: tb2/base_link
       use_sim_time: True
       rolling_window: true
       map_topic: /map
@@ -206,7 +206,7 @@ local_costmap:
         mark_threshold: 0
         observation_sources: scan
         scan:
-          topic: /scan
+          topic: scan
           max_obstacle_height: 2.0
           clearing: True
           marking: True
@@ -227,7 +227,7 @@ global_costmap:
       update_frequency: 1.0
       publish_frequency: 1.0
       global_frame: map
-      robot_base_frame: base_link
+      robot_base_frame: tb2/base_link
       use_sim_time: True
       robot_radius: 0.22
       resolution: 0.05
@@ -239,7 +239,7 @@ global_costmap:
         enabled: True
         observation_sources: scan
         scan:
-          topic: /scan
+          topic: scan
           max_obstacle_height: 2.0
           clearing: True
           marking: True
@@ -299,8 +299,8 @@ recoveries_server:
       plugin: "nav2_recoveries/BackUp"
     wait:
       plugin: "nav2_recoveries/Wait"
-    global_frame: odom
-    robot_base_frame: base_link
+    global_frame: tb2/odom
+    robot_base_frame: tb2/base_link
     transform_timeout: 0.1
     use_sim_time: true
     simulate_ahead_time: 2.0

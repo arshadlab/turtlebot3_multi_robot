@@ -16,9 +16,17 @@ find_package(ament_cmake REQUIRED)
 ################################################################################
 # Install
 ################################################################################
+install(PROGRAMS
+  launch/launch_helpers/initial_pose.py
+  DESTINATION lib/${PROJECT_NAME}
+  RENAME initial_pose
+)
+
 install(DIRECTORY launch models rviz urdf worlds params
   DESTINATION share/${PROJECT_NAME}/
 )
+
+
 
 ament_environment_hooks("${CMAKE_CURRENT_SOURCE_DIR}/env-hooks/multi_robot.dsv.in")
 
